@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dyslexia Quiz</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #f0f4f8;
+            --text-color: #2c3e50;
+            --card-background: rgba(255, 255, 255, 0.95);
+            --accent-color: #e74c3c;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --animation-duration: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            line-height: 1.6;
+            color: var(--text-color);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            z-index: -1;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        .navbar {
+            background-color: var(--card-background);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background-color var(--animation-duration) ease;
+        }
+
+        .navbar.scrolled {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color var(--animation-duration) ease;
+        }
+
+        .navbar-brand:hover {
+            color: var(--secondary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all var(--animation-duration) ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--secondary-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform var(--animation-duration) ease;
+        }
+
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 2px var(--shadow-color);
+        }
+
+        .description {
+            font-size: 1.2rem;
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .risk-input {
+            background: var(--card-background);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 20px var(--shadow-color);
+            text-align: center;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .risk-input form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .risk-input label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .risk-input input[type="number"] {
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 100px;
+            transition: all var(--animation-duration) ease;
+        }
+
+        .risk-input input[type="number"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+            outline: none;
+        }
+
+        .quiz-container {
+            background: var(--card-background);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 20px var(--shadow-color);
+            margin-top: 2rem;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .quiz-container h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .quiz-question {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            transition: all var(--animation-duration) ease;
+        }
+
+        .quiz-question:hover {
+            transform: translateY(-5px);
+        }
+
+        .quiz-question p {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .quiz-option {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .quiz-option input[type="radio"] {
+            display: none;
+        }
+
+        .quiz-option label {
+            font-size: 1rem;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all var(--animation-duration) ease;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .quiz-option label::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            margin-right: 10px;
+            transition: all var(--animation-duration) ease;
+        }
+
+        .quiz-option input[type="radio"]:checked + label::before {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: inset 0 0 0 4px white;
+        }
+
+        .quiz-option label:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        button, input[type="submit"] {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--animation-duration) ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover, input[type="submit"]:hover {
+            background: linear-gradient(135deg, #2980b9, #27ae60);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.5);
+            transform: translateY(-3px);
+        }
+
+        button::before, input[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        button:hover::before, input[type="submit"]:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        button.loading::after, input[type="submit"].loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        .quiz-score {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #d4edda;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #155724;
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .error {
+            color: #721c24;
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .back-link a button {
+            background: var(--primary-color);
+        }
+
+        .back-link a button:hover {
+            background: #2980b9;
+        }
+
+        .paragraph-container {
+            background: var(--card-background);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            margin: 2rem 0;
+            font-size: 1rem;
+            color: var(--text-color);
+            line-height: 1.8;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                gap: 0;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 15px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .hamburger {
+                display: block;
+                position: absolute;
+                top: 1.5rem;
+                right: 2rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .description {
+                font-size: 1rem;
+            }
+
+            .risk-input form {
+                flex-direction: column;
+            }
+
+            .quiz-question {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .quiz-container h2 {
+                font-size: 1.5rem;
+            }
+
+            .quiz-question p {
+                font-size: 1rem;
+            }
+
+            button, input[type="submit"] {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+
+        input[type="number"]:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        button:focus-visible, input[type="submit"]:focus-visible {
+            outline: 3px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        .quiz-option label:focus-visible {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dynamic Background -->
+    <div class="background"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="{{ url_for('landing') }}" class="navbar-brand">Dyslexia Detection</a>
+        <div class="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('landing') }}"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('detector') }}"><i class="fas fa-microphone"></i> Detector</a>
+            {% if session.username %}
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <h1>Dyslexia Quiz</h1>
+        <p class="description">Enter your dyslexia risk score (0-100) to generate a tailored quiz or take the quiz below.</p>
+
+        <!-- Risk Input -->
+        {% if not quiz %}
+            <div class="risk-input">
+                <form method="POST">
+                    <label for="risk_score">Risk Score:</label>
+                    <input type="number" name="risk_score" id="risk_score" min="0" max="100" required aria-label="Risk Score">
+                    <input type="submit" value="Generate Quiz">
+                </form>
+            </div>
+        {% endif %}
+
+
+
+        <!-- Quiz Container -->
+        {% if quiz and quiz is not string %}
+            <div class="quiz-container">
+                <h2>Dyslexia Quiz (Based on Risk Score: {{ risk_score }})</h2>
+                <form method="POST" id="quizForm">
+                    <input type="hidden" name="quiz_data" id="quizDataInput">
+                    <input type="hidden" name="risk_score" value="{{ risk_score }}">
+                    <input type="hidden" name="paragraph" value="{{ paragraph|default('', true)|tojson|safe }}">
+                    {% for q in quiz %}
+                        {% set question_index = loop.index0 %}
+                        <div class="quiz-question">
+                            <p>{{ loop.index }}. {{ q.question }}</p>
+                            {% for opt, text in q.options.items() %}
+                                <div class="quiz-option">
+                                    <input type="radio" name="q{{ question_index }}" id="q{{ question_index }}_{{ opt }}" value="{{ opt }}" required aria-label="{{ text }}">
+                                    <label for="q{{ question_index }}_{{ opt }}">{{ opt }}) {{ text }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    <input type="submit" value="Submit Quiz">
+                </form>
+                {% if quiz_score is defined %}
+                    <div class="quiz-score">
+                        Your Quiz Score: {{ quiz_score }}/{{ quiz|length }}
+                    </div>
+                {% endif %}
+            </div>
+            <script>
+                const quizData = {{ quiz|tojson }};
+                document.getElementById('quizDataInput').value = JSON.stringify(quizData);
+            </script>
+        {% elif quiz %}
+            <div class="error">Error generating quiz: {{ quiz }}</div>
+        {% endif %}
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <!-- Back Link -->
+        <div class="back-link">
+            <a href="{{ url_for('detector') }}"><button><i class="fas fa-arrow-left"></i> Back to Detection</button></a>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Quiz Form Submission
+        document.getElementById('quizForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('input[type="submit"]');
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            const answers = [];
+            for (let i = 0; i < {{ quiz|length if quiz else 0 }}; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                answers.push(selected ? selected.value : '');
+            }
+
+            const formData = new FormData(this);
+            formData.append('quiz_answers', JSON.stringify(answers));
+
+            fetch('/quiz', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.querySelector('.quiz-container').innerHTML += `<div class="error">Error submitting quiz: ${error.message}</div>`;
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            });
+        });
+
+        // Navbar Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
